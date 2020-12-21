@@ -1,5 +1,6 @@
 package main
 
+//Configuration blab blah
 type Configuration struct {
 }
 

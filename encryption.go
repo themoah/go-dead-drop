@@ -9,6 +9,29 @@ import (
 	"io"
 )
 
+// StoreSecret runs the flow.
+// Key is used to find and retrieve the secret.
+// Password will be used to decrypt it.
+// assumes that data isn't zero
+// still doesn't store it anywhere.
+func StoreSecret(data string) (key, password string) {
+	password = GenerateEncryptionKey()
+	encryptedData := Encrypt(data, password)
+
+	// TODO: here it goes to storing data.
+	fmt.Printf("### Encrypted secret: \n " + encryptedData + " \n ### End of encrypted data")
+
+	// temp
+	return "1234", password
+
+}
+
+// RetrieveSecret finds secret by key and decrypts data.
+// If key doesn't exist/was already retrieved/etc just returns empty string
+// func RetrieveSecret(key, password string) (decryptedData string) {
+
+// }
+
 // based on https://gist.github.com/donvito/efb2c643b724cf6ff453da84985281f8
 // TODO: check if it's better to use https://godoc.org/gocloud.dev/secrets#example-package
 // or https://github.com/m1/go-generate-password
@@ -16,7 +39,7 @@ import (
 //GenerateEncryptionKey would be passed to the end user.
 func GenerateEncryptionKey() (encryptionKey string) {
 	// TODO: create stronger key (crypto).
-	// TODO: configurable lenght of the key.
+	// TODO: configurable length of the key.
 	bytes := make([]byte, 16) //generate a random 16 byte key for AES-256
 	if _, err := rand.Read(bytes); err != nil {
 		panic(err.Error())
