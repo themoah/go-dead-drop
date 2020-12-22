@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -35,8 +36,10 @@ func main() {
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("alive :-D")
-	fmt.Fprintf(w, "ok")
+	response := statusResponse{
+		Status: "ok",
+	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +55,13 @@ func storeSecretHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	log.Println(string(requestBody))
+	key, password := StoreSecret(string(requestBody))
+	log.Println(" key: " + key + " ; body: " + password)
+	response := storedSecretResponse{
+		Key:      key,
+		Password: password,
+	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func retrieveSecretHandler(w http.ResponseWriter, r *http.Request) {

@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log"
 )
 
 // StoreSecret runs the flow.
@@ -19,10 +20,15 @@ func StoreSecret(data string) (key, password string) {
 	encryptedData := Encrypt(data, password)
 
 	// TODO: here it goes to storing data.
-	fmt.Printf("### Encrypted secret: \n " + encryptedData + " \n ### End of encrypted data")
+	// fmt.Printf("### Encrypted secret: \n " + encryptedData + " \n ### End of encrypted data \n")
 
-	// temp
-	return "1234", password
+	key = encryptedData[0:9]
+
+	if !StoreDropOnDisk(key, encryptedData) {
+		log.Println("failed to write the data")
+	}
+
+	return key, password
 
 }
 
