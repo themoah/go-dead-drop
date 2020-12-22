@@ -9,6 +9,11 @@ type storedSecretResponse struct {
 	Password string `json:"password"`
 }
 
+type retrievedDropResponse struct {
+	Status string `json:"status"`
+	Data   string `json:"data"`
+}
+
 type statusResponse struct {
 	Status string `json:"status"`
 }

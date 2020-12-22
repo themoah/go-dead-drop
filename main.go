@@ -29,7 +29,7 @@ func main() {
 	r.HandleFunc("/", indexHandler).Methods("GET")
 	r.HandleFunc("/healthz", healthCheckHandler).Methods("GET")
 	r.HandleFunc("/store", storeSecretHandler).Methods("POST")
-	r.HandleFunc("/retrieve", retrieveSecretHandler).Methods("POST")
+	r.HandleFunc("/retrieve/{key}/{password}", retrieveSecretHandler).Methods("POST")
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:"+serverPort, r))
 
@@ -66,4 +66,16 @@ func storeSecretHandler(w http.ResponseWriter, r *http.Request) {
 
 func retrieveSecretHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("getting the secret")
+
+	requestParams := mux.Vars(r)
+	key := requestParams["key"]
+	password := requestParams["password"]
+	decryptedData := Decrypt(RetrieveDropFromDisk(key), password)
+
+	response := retrievedDropResponse{
+		Status: "ok",
+		Data:   decryptedData,
+	}
+	json.NewEncoder(w).Encode(response)
+
 }
