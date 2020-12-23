@@ -1,5 +1,10 @@
 domain: "localhost"
 port: "8080"
-storageEngine: "localfile"
+storageEngine: "redis"
+dropExpiration: 1440
 localfile:
   basePath: "/tmp"
+redis:
+  addr: "localhost"
+  port: 6379
+  password:
