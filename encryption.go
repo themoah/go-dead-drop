@@ -7,36 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"log"
 )
-
-// StoreSecret runs the flow.
-// Key is used to find and retrieve the secret.
-// Password will be used to decrypt it.
-// assumes that data isn't zero
-// still doesn't store it anywhere.
-func StoreSecret(data string) (key, password string) {
-	password = GenerateEncryptionKey()
-	encryptedData := Encrypt(data, password)
-
-	// TODO: here it goes to storing data.
-	// fmt.Printf("### Encrypted secret: \n " + encryptedData + " \n ### End of encrypted data \n")
-
-	key = encryptedData[0:9]
-
-	if StoreDropOnDisk(key, encryptedData) != StatusOk {
-		log.Println("failed to write the data")
-	}
-
-	return key, password
-
-}
-
-// RetrieveSecret finds secret by key and decrypts data.
-// If key doesn't exist/was already retrieved/etc just returns empty string
-// func RetrieveSecret(key, password string) (decryptedData string) {
-
-// }
 
 // based on https://gist.github.com/donvito/efb2c643b724cf6ff453da84985281f8
 // TODO: check if it's better to use https://godoc.org/gocloud.dev/secrets#example-package

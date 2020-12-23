@@ -1,9 +1,5 @@
 package main
 
-//Configuration stores runtime params
-type Configuration struct {
-}
-
 type storedSecretResponse struct {
 	Key      string `json:"key"`
 	Password string `json:"password"`

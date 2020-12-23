@@ -1,3 +1,5 @@
 domain: "localhost"
 port: "8080"
-storageEngine: "file"
+storageEngine: "localfile"
+localfile:
+  basePath: "/tmp"

@@ -3,6 +3,8 @@ package main
 import (
 	"io/ioutil"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -10,6 +12,7 @@ const (
 	data = "meow"
 )
 
+// Fails now because config is loaded in main.
 // does IO
 func TestStoreDropOnDisk(t *testing.T) {
 	status := StoreDropOnDisk(key, data)
@@ -18,7 +21,7 @@ func TestStoreDropOnDisk(t *testing.T) {
 		t.Errorf("failed to write the file to the disk")
 	}
 
-	filepath := "/tmp/" + key
+	filepath := config.Localfile.BasePath + "/" + key
 	dat, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		panic(err)
@@ -28,6 +31,7 @@ func TestStoreDropOnDisk(t *testing.T) {
 		t.Errorf("stored and retrieved data didn't match")
 	}
 
+	assert.FileExists(t, filepath)
 }
 
 // Don't run it separately from previous one
@@ -42,4 +46,6 @@ func TestRetrieveDropFromDisk(t *testing.T) {
 	if dat != data {
 		t.Errorf("wrong data retrieved")
 	}
+	filepath := config.Localfile.BasePath + "/" + key
+	assert.NoFileExists(t, filepath)
 }
