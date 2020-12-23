@@ -11,7 +11,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const defaultPort = "8080"
+//StatusOk for sharing result and not boolean/err
+const (
+	defaultPort = "8080"
+	StatusOk    = "ok"
+	StatusError = "error"
+)
 
 // TODO: add https://github.com/google/go-cloud for cloud and db operations.
 func main() {
@@ -29,6 +34,7 @@ func main() {
 	r.HandleFunc("/", indexHandler).Methods("GET")
 	r.HandleFunc("/healthz", healthCheckHandler).Methods("GET")
 	r.HandleFunc("/store", storeSecretHandler).Methods("POST")
+	// TODO: maybe also with only 1 param - base64 key and password
 	r.HandleFunc("/retrieve/{key}/{password}", retrieveSecretHandler).Methods("POST")
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:"+serverPort, r))
@@ -37,7 +43,7 @@ func main() {
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	response := statusResponse{
-		Status: "ok",
+		Status: StatusOk,
 	}
 	json.NewEncoder(w).Encode(response)
 }
@@ -70,10 +76,15 @@ func retrieveSecretHandler(w http.ResponseWriter, r *http.Request) {
 	requestParams := mux.Vars(r)
 	key := requestParams["key"]
 	password := requestParams["password"]
-	decryptedData := Decrypt(RetrieveDropFromDisk(key), password)
+	status, encryptedDrop := RetrieveDropFromDisk(key)
+	// var decryptedData string
+	decryptedData := ""
+	if status == StatusOk {
+		decryptedData = Decrypt(encryptedDrop, password)
+	}
 
 	response := retrievedDropResponse{
-		Status: "ok",
+		Status: status,
 		Data:   decryptedData,
 	}
 	json.NewEncoder(w).Encode(response)

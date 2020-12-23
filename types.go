@@ -1,6 +1,6 @@
 package main
 
-//Configuration blab blah
+//Configuration stores runtime params
 type Configuration struct {
 }
 
@@ -16,10 +16,4 @@ type retrievedDropResponse struct {
 
 type statusResponse struct {
 	Status string `json:"status"`
-}
-
-//StoredSecret blah blah
-type StoredSecret struct {
-	basePath string
-	filename string
 }

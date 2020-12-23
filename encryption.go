@@ -24,7 +24,7 @@ func StoreSecret(data string) (key, password string) {
 
 	key = encryptedData[0:9]
 
-	if !StoreDropOnDisk(key, encryptedData) {
+	if StoreDropOnDisk(key, encryptedData) != StatusOk {
 		log.Println("failed to write the data")
 	}
 
