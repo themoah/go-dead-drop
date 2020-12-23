@@ -38,7 +38,7 @@ func TestHealthCheckHandler(t *testing.T) {
 }
 
 func TestStoreSecretHandler(t *testing.T) {
-	requestBody := strings.NewReader(data)
+	requestBody := strings.NewReader(testData)
 	req, err := http.NewRequest("POST", "/store", requestBody)
 
 	if err != nil {

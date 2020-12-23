@@ -8,26 +8,26 @@ import (
 )
 
 const (
-	key  = "123"
-	data = "meow"
+	testKey  = "123"
+	testData = "meow"
 )
 
 // Fails now because config is loaded in main.
 // does IO
 func TestStoreDropOnDisk(t *testing.T) {
-	status := StoreDropOnDisk(key, data)
+	status := StoreDropOnDisk(testKey, testData)
 
 	if status != StatusOk {
 		t.Errorf("failed to write the file to the disk")
 	}
 
-	filepath := config.Localfile.BasePath + "/" + key
+	filepath := config.Localfile.BasePath + "/" + testKey
 	dat, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		panic(err)
 	}
 
-	if string(dat) != data {
+	if string(dat) != testData {
 		t.Errorf("stored and retrieved data didn't match")
 	}
 
@@ -37,15 +37,15 @@ func TestStoreDropOnDisk(t *testing.T) {
 // Don't run it separately from previous one
 // TODO: also check if file was deleted afterwards
 func TestRetrieveDropFromDisk(t *testing.T) {
-	status, dat := RetrieveDropFromDisk(key)
+	status, dat := RetrieveDropFromDisk(testKey)
 
 	if status != StatusOk {
 		t.Errorf("failed to read from dik")
 	}
 
-	if dat != data {
+	if dat != testData {
 		t.Errorf("wrong data retrieved")
 	}
-	filepath := config.Localfile.BasePath + "/" + key
+	filepath := config.Localfile.BasePath + "/" + testKey
 	assert.NoFileExists(t, filepath)
 }
