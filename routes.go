@@ -29,7 +29,7 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // Password will be used to decrypt it.
 // assumes that data isn't zero
 func StoreSecretHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("store secret")
+	log.Println("/store")
 
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -56,7 +56,7 @@ func StoreSecretHandler(w http.ResponseWriter, r *http.Request) {
 
 // RetrieveSecretHandler is exported for tests
 func RetrieveSecretHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("retrieving the drop")
+	log.Println("/retrieve")
 
 	requestParams := mux.Vars(r)
 	key := requestParams["key"]

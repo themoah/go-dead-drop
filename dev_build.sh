@@ -5,4 +5,5 @@ if test -f "dead-drop"; then
 fi
 
 go build -ldflags "-w -s" -o dead-drop .
+echo "successful dev build"
 ./dead-drop
