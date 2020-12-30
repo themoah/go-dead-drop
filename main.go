@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
+	memkv "github.com/kelseyhightower/memkv"
 )
 
 //StatusOk for sharing result and not boolean/err
@@ -18,6 +19,9 @@ const (
 // Rdb global value, needs refactor
 var Rdb *redis.Client
 
+// MemoryStore default storage engine
+var MemoryStore memkv.Store
+
 // TODO: maybe use https://github.com/google/go-cloud for cloud and db operations.
 func main() {
 	parseConfig()
@@ -26,6 +30,8 @@ func main() {
 		Rdb = redis.NewClient(&redis.Options{
 			Addr: config.Redis.Addr + ":" + config.Redis.Port,
 		})
+	} else if config.StorageEngine == "memory" {
+		MemoryStore = memkv.New()
 	}
 
 	log.Println("starting go-dead-drop, listening on port 0.0.0.0:" + config.Port + "\n")
