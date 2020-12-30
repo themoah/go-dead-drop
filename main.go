@@ -14,12 +14,13 @@ const (
 	defaultPort = "8080"
 	StatusOk    = "ok"
 	StatusError = "error"
+	ApiVersion  = "0.1"
 )
 
 // Rdb global value, needs refactor
 var Rdb *redis.Client
 
-// MemoryStore default storage engine
+// MemoryStore default storage engine can handle ~50 requests per second without tweaking configuration.
 var MemoryStore memkv.Store
 
 // TODO: maybe use https://github.com/google/go-cloud for cloud and db operations.
@@ -39,6 +40,7 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", IndexHandler).Methods("GET")
+	r.HandleFunc("/version", versionHandler).Methods("GET")
 	r.HandleFunc("/healthz", HealthCheckHandler).Methods("GET")
 	r.HandleFunc("/store", StoreSecretHandler).Methods("POST")
 	// TODO: maybe also with only 1 param - base64 key and password

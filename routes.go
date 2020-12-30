@@ -12,8 +12,13 @@ import (
 
 // IndexHandler TODO: Should load html/webui
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("index")
+	log.Println("/index")
 	fmt.Fprintf(w, "hello, world !")
+}
+
+func versionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("/version")
+	fmt.Fprintf(w, ApiVersion)
 }
 
 // HealthCheckHandler returns json ok
