@@ -12,8 +12,13 @@ import (
 
 // IndexHandler TODO: Should load html/webui
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("index")
+	log.Println("/index")
 	fmt.Fprintf(w, "hello, world !")
+}
+
+func versionHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print("/version")
+	fmt.Fprintf(w, ApiVersion)
 }
 
 // HealthCheckHandler returns json ok
@@ -44,13 +49,12 @@ func StoreSecretHandler(w http.ResponseWriter, r *http.Request) {
 
 	if status != StatusOk {
 		log.Println("failed to write the data")
+		key = ""
+		password = ""
 	}
 
 	// log.Println(" key: " + key + " ; body: " + password)
-	response := storedSecretResponse{
-		Key:      key,
-		Password: password,
-	}
+	response := storedSecretResponse{key, password}
 	json.NewEncoder(w).Encode(response)
 }
 

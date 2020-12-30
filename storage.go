@@ -18,7 +18,7 @@ func StoreDrop(key, data string) (status string) {
 	case "redis":
 		return StoreDropInRedis(key, data, Rdb)
 	default:
-		return StatusError
+		return StoreDropInMemory(key, data)
 	}
 }
 
@@ -30,35 +30,53 @@ func RetrieveDrop(key string) (status, encryptedDropFromDisk string) {
 	case "redis":
 		return RetrieveFromRedis(key, Rdb)
 	default:
-		return StatusError, ""
+		return RetrieveFromMemory(key)
 	}
 
 }
 
 var ctx = context.Background()
 
+//StoreDropInMemory from default storage backend.
+func StoreDropInMemory(key, data string) (status string) {
+	log.Println("storing in memory")
+	MemoryStore.Set(key, data)
+	return StatusOk
+}
+
+//RetrieveFromMemory from default storage backend.
+func RetrieveFromMemory(key string) (status, encryptedDrop string) {
+	log.Println("pulling from memory")
+	kv, err := MemoryStore.Get(key)
+	if err != nil {
+		log.Fatal(err)
+		return StatusError, ""
+	}
+	deleteFromMemory(key)
+	return StatusOk, kv.Value
+
+}
+
+func deleteFromMemory(key string) {
+	MemoryStore.Del(key)
+}
+
 //StoreDropInRedis stores and sets TTL
 func StoreDropInRedis(key, data string, rdb *redis.Client) (status string) {
 	log.Println("storing in redis")
 
-	// fmt.Printf("%T", rdb)
-
 	ttl := time.Duration(config.DropExpiration) * time.Minute
 	err := rdb.Set(ctx, key, data, ttl).Err()
 	if err != nil {
-		panic(err)
+		return StatusError
 	}
 
 	return StatusOk
-
 }
 
 //RetrieveFromRedis pulls encrypted drop and deletes it
 func RetrieveFromRedis(key string, rdb *redis.Client) (status, enryptedDrop string) {
 	log.Println("pulling from redis")
-	// rdb := redis.NewClient(&redis.Options{
-	// 	Addr: "localhost:6379",
-	// })
 
 	val, err := rdb.Get(ctx, key).Result()
 	if err != nil {
@@ -67,7 +85,6 @@ func RetrieveFromRedis(key string, rdb *redis.Client) (status, enryptedDrop stri
 	rdb.Del(ctx, key)
 
 	return StatusOk, val
-
 }
 
 // StoreDropOnDisk writes encrypted data to the storage backend
@@ -93,14 +110,12 @@ func StoreDropOnDisk(key, data string) (status string) {
 	defer f.Close()
 
 	return StatusOk
-
 }
 
 // RetrieveDropFromDisk returns encrypted data and status.
 // DONT USE IN PROD
 // status - ok or error (in case doesn't exists)
 // encrypted data will be empty string if it failed.
-// don't use in prod.
 func RetrieveDropFromDisk(key string) (status, encryptedDropFromDisk string) {
 	//TODO: mutex or other solution to the race condition.
 	filepath := config.Localfile.BasePath + "/" + key

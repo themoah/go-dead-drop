@@ -10,8 +10,9 @@ import (
 type Config struct {
 	Domain         string `yaml:"domain"`
 	Port           string `yaml:"port"`
+	LogLevel       string `yaml:"logLevel"`
 	StorageEngine  string `yaml:"storageEngine"`
-	DropExpiration int64  `yaml:"dropExpiration"`
+	DropExpiration int    `yaml:"dropExpiration"`
 	Localfile      struct {
 		BasePath string `yaml:"basePath"`
 	} `yaml:"localfile"`
@@ -19,7 +20,6 @@ type Config struct {
 		Addr     string      `yaml:"addr"`
 		Port     string      `yaml:"port"`
 		Password interface{} `yaml:"password"`
-		DB       int         `yaml:"DB"`
 	} `yaml:"redis"`
 }
 

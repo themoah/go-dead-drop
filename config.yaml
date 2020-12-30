@@ -1,6 +1,7 @@
 domain: "localhost"
 port: "8080"
-storageEngine: "redis"
+logLevel: DEBUG
+storageEngine: "memory"
 dropExpiration: 1440
 localfile:
   basePath: "/tmp"
