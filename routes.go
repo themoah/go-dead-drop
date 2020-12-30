@@ -48,7 +48,7 @@ func StoreSecretHandler(w http.ResponseWriter, r *http.Request) {
 	status := StoreDrop(key, encryptedData)
 
 	if status != StatusOk {
-		log.Println("failed to write the data")
+		log.Println("failed to store the drop")
 		key = ""
 		password = ""
 	}
@@ -77,5 +77,4 @@ func RetrieveSecretHandler(w http.ResponseWriter, r *http.Request) {
 		Data:   decryptedData,
 	}
 	json.NewEncoder(w).Encode(response)
-
 }

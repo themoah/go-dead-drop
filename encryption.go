@@ -9,15 +9,11 @@ import (
 	"io"
 )
 
-// based on https://gist.github.com/donvito/efb2c643b724cf6ff453da84985281f8
-// TODO: check if it's better to use https://godoc.org/gocloud.dev/secrets#example-package
-// or https://github.com/m1/go-generate-password
-
 //GenerateEncryptionKey would be passed to the end user.
 func GenerateEncryptionKey() (encryptionKey string) {
-	// TODO: create stronger key (crypto).
 	// TODO: configurable length of the key.
-	bytes := make([]byte, 16) //generate a random 16 byte key for AES-256
+	//generate a random 16 byte key for AES-256
+	bytes := make([]byte, 16)
 	if _, err := rand.Read(bytes); err != nil {
 		panic(err.Error())
 	}
@@ -55,7 +51,8 @@ func Encrypt(stringToEncrypt string, keyString string) (encryptedString string) 
 	}
 
 	//Encrypt the data using aesGCM.Seal
-	//Since we don't want to save the nonce somewhere else in this case, we add it as a prefix to the encrypted data. The first nonce argument in Seal is the prefix.
+	//Since we don't want to save the nonce somewhere else in this case,
+	// we add it as a prefix to the encrypted data. The first nonce argument in Seal is the prefix.
 	ciphertext := aesGCM.Seal(nonce, nonce, plaintext, nil)
 	return fmt.Sprintf("%x", ciphertext)
 }

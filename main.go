@@ -23,7 +23,6 @@ var Rdb *redis.Client
 // MemoryStore default storage engine can handle ~50 requests per second without tweaking configuration.
 var MemoryStore memkv.Store
 
-// TODO: maybe use https://github.com/google/go-cloud for cloud and db operations.
 func main() {
 	parseConfig()
 

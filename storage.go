@@ -113,9 +113,7 @@ func StoreDropOnDisk(key, data string) (status string) {
 }
 
 // RetrieveDropFromDisk returns encrypted data and status.
-// DONT USE IN PROD
-// status - ok or error (in case doesn't exists)
-// encrypted data will be empty string if it failed.
+// !!! DONT USE IN PROD !!!
 func RetrieveDropFromDisk(key string) (status, encryptedDropFromDisk string) {
 	//TODO: mutex or other solution to the race condition.
 	filepath := config.Localfile.BasePath + "/" + key
