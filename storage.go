@@ -49,7 +49,7 @@ func RetrieveFromMemory(key string) (status, encryptedDrop string) {
 	log.Println("pulling from memory")
 	kv, err := MemoryStore.Get(key)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return StatusError, ""
 	}
 	deleteFromMemory(key)
@@ -128,12 +128,14 @@ func RetrieveDropFromDisk(key string) (status, encryptedDropFromDisk string) {
 		log.Println("oh, empty file")
 		return StatusError, ""
 	}
-	deleteFile(filepath)
+	deleteFile(key)
 	return StatusOk, stringData
 }
 
 // an internal function to delete drop.
-func deleteFile(filepath string) (status string) {
+func deleteFile(key string) (status string) {
+	// fix for CWE-22 (CodeQL)
+	filepath := config.Localfile.BasePath + "/" + key
 	e := os.Remove(filepath)
 	if e != nil {
 		log.Fatal(e)

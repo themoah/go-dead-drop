@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/gorilla/mux"
 )
@@ -18,7 +19,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 func versionHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("/version")
-	fmt.Fprintf(w, ApiVersion)
+	fmt.Fprintf(w, APIVersion)
 }
 
 // HealthCheckHandler returns json ok
@@ -26,6 +27,7 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	response := statusResponse{
 		Status: StatusOk,
 	}
+	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -55,6 +57,7 @@ func StoreSecretHandler(w http.ResponseWriter, r *http.Request) {
 
 	// log.Println(" key: " + key + " ; body: " + password)
 	response := storedSecretResponse{key, password}
+	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -65,16 +68,37 @@ func RetrieveSecretHandler(w http.ResponseWriter, r *http.Request) {
 	requestParams := mux.Vars(r)
 	key := requestParams["key"]
 	password := requestParams["password"]
-	status, encryptedDrop := RetrieveDrop(key)
-	// var decryptedData string
 	decryptedData := ""
+	var status, encryptedDrop string
+	keyTest := verifyKey(key)
+	if keyTest == StatusOk {
+		status, encryptedDrop = RetrieveDrop(key)
+	} else {
+		//debug log
+		log.Println("very bad key")
+	}
 	if status == StatusOk {
 		decryptedData = Decrypt(encryptedDrop, password)
 	}
-
 	response := retrievedDropResponse{
 		Status: status,
 		Data:   decryptedData,
 	}
+	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func verifyKey(key string) (status string) {
+	// IF FOUND == MEANS BAD
+	match, err := regexp.MatchString("[^a-z0-9]+", key)
+	if err != nil {
+		log.Println("bad key " + key)
+		return StatusError
+	}
+	if match {
+		log.Println("key is bad")
+		return StatusError
+	}
+	return StatusOk
+
 }

@@ -38,6 +38,8 @@ func TestHealthCheckHandler(t *testing.T) {
 }
 
 func TestStoreSecretHandler(t *testing.T) {
+	parseConfig()
+	setupStorageEngine()
 	requestBody := strings.NewReader(testData)
 	req, err := http.NewRequest("POST", "/store", requestBody)
 
