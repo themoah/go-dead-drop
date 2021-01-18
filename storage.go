@@ -49,7 +49,7 @@ func RetrieveFromMemory(key string) (status, encryptedDrop string) {
 	log.Println("pulling from memory")
 	kv, err := MemoryStore.Get(key)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return StatusError, ""
 	}
 	deleteFromMemory(key)

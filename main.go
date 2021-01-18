@@ -14,7 +14,7 @@ const (
 	defaultPort = "8080"
 	StatusOk    = "ok"
 	StatusError = "error"
-	ApiVersion  = "0.1"
+	APIVersion  = "0.1"
 )
 
 // Rdb global value, needs refactor
@@ -25,14 +25,7 @@ var MemoryStore memkv.Store
 
 func main() {
 	parseConfig()
-
-	if config.StorageEngine == "redis" {
-		Rdb = redis.NewClient(&redis.Options{
-			Addr: config.Redis.Addr + ":" + config.Redis.Port,
-		})
-	} else if config.StorageEngine == "memory" {
-		MemoryStore = memkv.New()
-	}
+	setupStorageEngine()
 
 	log.Println("starting go-dead-drop, listening on port 0.0.0.0:" + config.Port + "\n")
 
@@ -46,5 +39,16 @@ func main() {
 	r.HandleFunc("/retrieve/{key}/{password}", RetrieveSecretHandler).Methods("POST")
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:"+config.Port, r))
+
+}
+
+func setupStorageEngine() {
+	if config.StorageEngine == "redis" {
+		Rdb = redis.NewClient(&redis.Options{
+			Addr: config.Redis.Addr + ":" + config.Redis.Port,
+		})
+	} else if config.StorageEngine == "memory" {
+		MemoryStore = memkv.New()
+	}
 
 }
