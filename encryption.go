@@ -9,7 +9,7 @@ import (
 	"io"
 )
 
-//GenerateEncryptionKey would be passed to the end user.
+//GenerateEncryptionKey result would be passed to the end user.
 func GenerateEncryptionKey() (encryptionKey string) {
 	// TODO: configurable length of the key.
 	//generate a random 16 byte key for AES-256
@@ -19,7 +19,6 @@ func GenerateEncryptionKey() (encryptionKey string) {
 	}
 
 	key := hex.EncodeToString(bytes)
-	// fmt.Printf("encryption key : %s\n", key)
 
 	return key
 }
@@ -87,5 +86,5 @@ func Decrypt(encryptedString string, keyString string) (decryptedString string) 
 		panic(err.Error())
 	}
 
-	return fmt.Sprintf("%s", plaintext)
+	return string(plaintext)
 }
