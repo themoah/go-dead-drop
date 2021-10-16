@@ -47,7 +47,11 @@ func StoreSecretHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: configurable length
 	key := encryptedData[0:9]
 
-	status := StoreDrop(key, encryptedData)
+	var s secret
+	s.key = key
+	s.data = encryptedData
+
+	status := s.StoreDrop()
 
 	if status != StatusOk {
 		log.Println("failed to store the drop")

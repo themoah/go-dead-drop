@@ -11,14 +11,14 @@ import (
 )
 
 //StoreDrop is used instead of interface
-func StoreDrop(key, data string) (status string) {
+func (s secret) StoreDrop() (status string) {
 	switch config.StorageEngine {
 	case "localfile":
-		return StoreDropOnDisk(key, data)
+		return StoreDropOnDisk(s.key, s.data)
 	case "redis":
-		return StoreDropInRedis(key, data, Rdb)
+		return StoreDropInRedis(s.key, s.data, Rdb)
 	default:
-		return StoreDropInMemory(key, data)
+		return StoreDropInMemory(s.key, s.data)
 	}
 }
 
@@ -39,7 +39,7 @@ var ctx = context.Background()
 
 //StoreDropInMemory from default storage backend.
 func StoreDropInMemory(key, data string) (status string) {
-	log.Println("storing in memory")
+	// log.Println("storing in memory")
 	MemoryStore.Set(key, data)
 	return StatusOk
 }

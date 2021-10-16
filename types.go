@@ -1,5 +1,10 @@
 package main
 
+type secret struct {
+	key  string
+	data string
+}
+
 type storedSecretResponse struct {
 	Key      string `json:"key"`
 	Password string `json:"password"`
