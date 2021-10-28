@@ -12,7 +12,7 @@ import (
 )
 
 // IndexHandler TODO: Should load html/webui
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("/index")
 	fmt.Fprintf(w, "hello, world !")
 }
@@ -35,7 +35,7 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // Key is used to for storing the drop
 // Password will be used to decrypt it.
 // assumes that data isn't zero
-func StoreSecretHandler(w http.ResponseWriter, r *http.Request) {
+func storeSecretHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("/store")
 
 	requestBody, err := ioutil.ReadAll(r.Body)

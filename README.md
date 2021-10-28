@@ -10,7 +10,7 @@ Aims to help sharing information in secure, fast and comfortable way. Its securi
 
 Project is in a very early stage. Probably not production ready.
 
-Runs on any possible platform (written in golang, one executable) - standalone, docker, kubernetes, lambda with different storage back-ends: file, redis, rocksdb, mysql, mongodb, cloud bucket and etc.
+Runs on any possible platform (written in golang, one executable) - standalone, docker, kubernetes. Comes with built-in kv memory store.
 
 ### Local setup:
 Developed with go1.14, but will probably run on earlier versions.
@@ -20,8 +20,3 @@ Developed with go1.14, but will probably run on earlier versions.
 
 1. Send HTTP post to store , e.g. `curl --data-binary @wow.sh http://localhost:8080/store`
 2. Use generated params to retrieve `curl -X POST http://localhost:8080/retrieve/{KEY}/{PASSWORD}`
-
-### Additional configurations:
-
-Basic configuration uses in-memory store. You can also persist data at Redis or local filesystem(not recommended for non-development environments).
-Change storageEngine in config.yaml to "redis" and provide connection details.

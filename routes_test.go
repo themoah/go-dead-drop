@@ -16,7 +16,7 @@ func TestIndex(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(IndexHandler)
+	handler := http.HandlerFunc(indexHandler)
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
@@ -48,7 +48,7 @@ func TestStoreSecretHandler(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(StoreSecretHandler)
+	handler := http.HandlerFunc(storeSecretHandler)
 	handler.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
