@@ -1,13 +1,17 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	bigcache "github.com/allegro/bigcache/v3"
 
 	"github.com/gorilla/mux"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 //StatusOk for sharing result and not boolean/err
@@ -22,13 +26,23 @@ var MemoryStore *bigcache.BigCache
 
 func main() {
 	parseConfig()
+
+	log := zerolog.New(os.Stdout)
+	// zerolog.TimeFieldFormat = time.RFC3339
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	if checkIfDevEnv() {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	} else {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
+
 	err := setupStorageEngine()
 	if err != nil {
 		panic(err)
 	}
 
-	log.Println("starting go-dead-drop, listening on port 0.0.0.0:" + config.Port + "\n")
-	log.Printf("Maximum capacity of memory is %v values \n", MemoryStore.Capacity())
+	log.Info().Msg("starting go-dead-drop, listening on port 0.0.0.0:" + config.Port)
+	log.Debug().Msg(fmt.Sprintf("Maximum capacity of memory is %v values ", MemoryStore.Capacity()))
 
 	r := mux.NewRouter()
 
@@ -39,7 +53,23 @@ func main() {
 	// TODO: maybe also with only 1 param - base64 key and password
 	r.HandleFunc("/retrieve/{key}/{password}", RetrieveSecretHandler).Methods("POST")
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:"+config.Port, r))
+	http.ListenAndServe("0.0.0.0:"+config.Port, r)
+
+}
+
+func checkIfDevEnv() bool {
+
+	val, present := os.LookupEnv("DEBUG")
+	if !present {
+		log.Info().Msg("not dev environment")
+		return false
+	} else if val == "true" {
+		log.Info().Msg("it's a dev environment")
+		return true
+	} else {
+		log.Info().Msg("!DEBUG=true")
+		return false
+	}
 
 }
 
@@ -62,7 +92,7 @@ func setupStorageEngine() error {
 
 	cache, err := bigcache.NewBigCache(bcConfig)
 	if err != nil {
-		log.Fatal(err)
+		log.Error().Err(err).Msg("failed to create big cache")
 		return err
 	}
 
