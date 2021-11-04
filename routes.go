@@ -4,26 +4,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/zerolog/log"
 )
 
 // IndexHandler TODO: Should load html/webui
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("/index")
+	log.Debug().Msg("/index")
 	fmt.Fprintf(w, "hello, world !")
 }
 
 func versionHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("/version")
+	log.Debug().Msg("/version")
 	fmt.Fprintf(w, APIVersion)
 }
 
 // HealthCheckHandler returns json ok
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	log.Debug().Msg("/health")
 	response := statusResponse{
 		Status: StatusOk,
 	}
@@ -36,11 +37,11 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // Password will be used to decrypt it.
 // assumes that data isn't zero
 func storeSecretHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("/store")
+	log.Debug().Msg("/store")
 
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		log.Error().Err(err).Msg("can't read requestBody")
 	}
 	password := GenerateEncryptionKey()
 	encryptedData := Encrypt(string(requestBody), password)
@@ -54,7 +55,7 @@ func storeSecretHandler(w http.ResponseWriter, r *http.Request) {
 	status := s.StoreDrop()
 
 	if status != StatusOk {
-		log.Println("failed to store the drop")
+		log.Error().Err(nil).Msg("failed to store the drop")
 		key = ""
 		password = ""
 	}
@@ -67,7 +68,7 @@ func storeSecretHandler(w http.ResponseWriter, r *http.Request) {
 
 // RetrieveSecretHandler is exported for tests
 func RetrieveSecretHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("/retrieve")
+	log.Debug().Msg("/retrieve")
 
 	requestParams := mux.Vars(r)
 	key := requestParams["key"]
@@ -79,7 +80,7 @@ func RetrieveSecretHandler(w http.ResponseWriter, r *http.Request) {
 		status, encryptedDrop = RetrieveDrop(key)
 	} else {
 		//debug log
-		log.Println("very bad key")
+		log.Debug().Msg("very bad key")
 	}
 	if status == StatusOk {
 		decryptedData = Decrypt(encryptedDrop, password)
@@ -96,11 +97,11 @@ func verifyKey(key string) (status string) {
 	// IF FOUND == MEANS BAD
 	match, err := regexp.MatchString("[^a-z0-9]+", key)
 	if err != nil {
-		log.Println("bad key " + key)
+		log.Error().Err(nil).Msg("bad key " + key)
 		return StatusError
 	}
 	if match {
-		log.Println("key is bad")
+		log.Error().Msg("key is bad")
 		return StatusError
 	}
 	return StatusOk

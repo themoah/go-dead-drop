@@ -1,13 +1,13 @@
 package main
 
-import "log"
+import "github.com/rs/zerolog/log"
 
 //StoreDrop is used instead of interface
 func (s secret) StoreDrop() (status string) {
 
 	err := MemoryStore.Set(s.key, []byte(s.data))
 	if err != nil {
-		log.Printf("wow")
+		log.Info().Msg("wow")
 		return StatusError
 	}
 	return StatusOk
