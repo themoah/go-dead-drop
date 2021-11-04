@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	bigcache "github.com/allegro/bigcache/v3"
@@ -25,7 +26,16 @@ var MemoryStore *bigcache.BigCache
 
 func main() {
 	parseConfig()
-	zerolog.TimeFieldFormat = time.RFC3339
+
+	log := zerolog.New(os.Stdout)
+	// zerolog.TimeFieldFormat = time.RFC3339
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	if checkIfDevEnv() {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	} else {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
+
 	err := setupStorageEngine()
 	if err != nil {
 		panic(err)
@@ -44,6 +54,22 @@ func main() {
 	r.HandleFunc("/retrieve/{key}/{password}", RetrieveSecretHandler).Methods("POST")
 
 	http.ListenAndServe("0.0.0.0:"+config.Port, r)
+
+}
+
+func checkIfDevEnv() bool {
+
+	val, present := os.LookupEnv("DEBUG")
+	if !present {
+		log.Info().Msg("not dev environment")
+		return false
+	} else if val == "true" {
+		log.Info().Msg("it's a dev environment")
+		return true
+	} else {
+		log.Info().Msg("!DEBUG=true")
+		return false
+	}
 
 }
 

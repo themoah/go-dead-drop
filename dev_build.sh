@@ -6,4 +6,4 @@ fi
 
 go build -ldflags "-w -s" -o dead-drop .
 echo "successful dev build"
-./dead-drop
+DEBUG=true ./dead-drop
